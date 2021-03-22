@@ -3,7 +3,8 @@ import sys
 import matplotlib.pyplot as plt
 from PIL import Image
 from numpy import random
-
+import os.path
+import copy
 
 #global constants
 
@@ -49,7 +50,6 @@ interventions_dictionary = {x:[0,0] for x in interventions} #this generates a [0
 grounded_interventions_dictionary = {x:[0,0] for x in grounded_interventions} #same for the grounded AI
 
 intervention = (0,0,0,0) #default initial intervention is to do nothing
-
 
 
 
@@ -347,14 +347,20 @@ def AI_training(filename='learning.txt'):#runs a full AI round of 5000 rounds of
     grounded_interventions_dictionary = {x:[0,0] for x in grounded_interventions}
 
     with open(filename, 'w') as f:
+        rand_interventions = copy.deepcopy(interventions)
+        rand_grounded_interventions = copy.deepcopy(grounded_interventions)
+        random.shuffle(rand_interventions)
+        random.shuffle(rand_grounded_interventions)
+
         posi = 0
         grposi = 0
+
         tdone = False
         grtdone = False
 
         epsilon = 0.2
 
-        for n in range(5000):
+        for n in range(2000):
             bestest = True
             grbestest = True
         
@@ -363,17 +369,17 @@ def AI_training(filename='learning.txt'):#runs a full AI round of 5000 rounds of
             inter, grinter = best_intervention()
 
             if not tdone or draw < epsilon:
-                inter = interventions[posi]
+                inter = rand_interventions[posi]
                 posi += 1
-                if posi >= len(interventions):
+                if posi >= len(rand_interventions):
                     posi = 0
                     tdone = True
                 bestest = False
 
             if not grtdone or draw < epsilon:
-                grinter = grounded_interventions[grposi]
+                grinter = rand_grounded_interventions[grposi]
                 grposi += 1
-                if grposi >= len(grounded_interventions):
+                if grposi >= len(rand_grounded_interventions):
                     grposi = 0
                     grtdone = True
                 grbestest = False
@@ -381,21 +387,30 @@ def AI_training(filename='learning.txt'):#runs a full AI round of 5000 rounds of
             print(run_three_interventions(inter,grinter) + list(inter) + list(grinter) + [bestest] + [grbestest],file = f)
 
 
-#if len(sys.argv) < 2:
-#    val = 4000
-#else:
-#    val = int(sys.argv[1])
 
-for i in range(3248,10000):
-    AI_training('learning_' + str(i).zfill(4)  + '.txt')
-    print(i)
+if len(sys.argv) < 3:
+    start_val = 0
+    end_val = 1
+    output = True
+else:
+    start_val = int(sys.argv[1])
+    end_val = int(sys.argv[2])
+    output = False
 
 
-fig, ax = plt.subplots()
+for i in range(start_val,end_val):
+    filename = 'learning_' + str(i).zfill(4)  + '.txt'
+    if not os.path.isfile(filename):
+        AI_training(filename)
+        if output:
+            print(str(i).zfill(4))
+        
 
-im = setup_grid(plt)
+#fig, ax = plt.subplots()
 
-im = show_human(im,plt)
+#im = setup_grid(plt)
+
+#im = show_human(im,plt)
 
 
 
