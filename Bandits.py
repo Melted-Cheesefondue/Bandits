@@ -4,7 +4,10 @@ import matplotlib.pyplot as plt
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from BanditsCore import reset, light_reset, best_bandit, estimate_of, update_estimate, total_reward, run_bandit, move_human, move_human_to, current_position, orthogonal_move, one_run, show_human, square, setup_grid, control, bandit_GUI
+import os.path
+
+from BanditsAI import AI_training
+from BanditsHuman import bandit_GUI
 
 
 
@@ -47,21 +50,21 @@ bandit_GUI()
 
 
 
-#if len(sys.argv) < 3:
-#    start_val = 0
-#    end_val = 1
-#    output = True
-#else:
-#    start_val = int(sys.argv[1])
-#    end_val = int(sys.argv[2])
-#    output = False
+if len(sys.argv) < 3:
+    start_val = 0
+    end_val = 1
+    output = True
+else:
+    start_val = int(sys.argv[1])
+    end_val = int(sys.argv[2])
+    output = False
 
 
-#for i in range(start_val,end_val):
-#    filename = 'learning_' + str(i).zfill(4)  + '.txt'
-#    if not os.path.isfile(filename):
-#        AI_training(filename)
-#        if output:
-#            print(str(i).zfill(4))
+for i in range(start_val,end_val):
+    filename = 'learning_' + str(i).zfill(4)  + '.txt'
+    if not os.path.isfile(filename):
+        AI_training(filename)
+        if output:
+            print(str(i).zfill(4))
 
 
